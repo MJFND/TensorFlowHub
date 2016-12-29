@@ -89,7 +89,7 @@ with graph.as_default():
   
 
   #Store layers weight & bias
-weights = {
+  weights = {
     'h1': tf.Variable(tf.random_normal([n_input, n_hidden_1])),
     'h2': tf.Variable(tf.random_normal([n_hidden_1, n_hidden_2])),
     'h3': tf.Variable(tf.random_normal([n_hidden_2, n_hidden_3])),
