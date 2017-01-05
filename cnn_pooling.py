@@ -78,11 +78,11 @@ with graph.as_default():
   
   # Model.
   def model(data):
-    conv_1 = tf.nn.conv2d(data, layer1_weights, [1, 2, 2, 1], padding='SAME')
+    conv_1 = tf.nn.conv2d(data, layer1_weights, [1, 1, 1, 1], padding='SAME')
     hidden_1 = tf.nn.relu(conv_1 + layer1_biases)
     pool_1 = tf.nn.max_pool(hidden_1,[1, 2, 2, 1],[1, 2, 2, 1], padding='SAME')
 
-    conv_2 = tf.nn.conv2d(pool_1, layer2_weights, [1, 2, 2, 1], padding='SAME')
+    conv_2 = tf.nn.conv2d(pool_1, layer2_weights, [1, 1, 1, 1], padding='SAME')
     hidden_2 = tf.nn.relu(conv_2 + layer2_biases)
 	pool_2 = tf.nn.max_pool(hidden_2,[1, 2, 2, 1],[1, 2, 2, 1], padding='SAME')
 
