@@ -169,10 +169,6 @@ with graph.as_default():
   ox = tf.Variable(tf.truncated_normal([vocabulary_size, num_nodes], -0.1, 0.1))
   om = tf.Variable(tf.truncated_normal([num_nodes, num_nodes], -0.1, 0.1))
   ob = tf.Variable(tf.zeros([1, num_nodes]))
-  # Concatenate parameters  
-  sx = tf.concat(1, [ix, fx, cx, ox])
-  sm = tf.concat(1, [im, fm, cm, om])
-  sb = tf.concat(1, [ib, fb, cb, ob])
   # Variables saving state across unrollings.
   saved_output = tf.Variable(tf.zeros([batch_size, num_nodes]), trainable=False)
   saved_state = tf.Variable(tf.zeros([batch_size, num_nodes]), trainable=False)
@@ -185,16 +181,11 @@ with graph.as_default():
     """Create a LSTM cell. See e.g.: http://arxiv.org/pdf/1402.1128v1.pdf
     Note that in this formulation, we omit the various connections between the
     previous state and the gates."""
-    smatmul = tf.matmul(i, sx) + tf.matmul(o, sm) + sb
-    smatmul_input, smatmul_forget, update, smatmul_output = tf.split(1, 4, smatmul)
-    input_gate = tf.sigmoid(smatmul_input)
-    forget_gate = tf.sigmoid(smatmul_forget)
-    output_gate = tf.sigmoid(smatmul_output)
-    #input_gate = tf.sigmoid(tf.matmul(i, ix) + tf.matmul(o, im) + ib)
-    #forget_gate = tf.sigmoid(tf.matmul(i, fx) + tf.matmul(o, fm) + fb)
-    #update = tf.matmul(i, cx) + tf.matmul(o, cm) + cb
+    input_gate = tf.sigmoid(tf.matmul(i, ix) + tf.matmul(o, im) + ib)
+    forget_gate = tf.sigmoid(tf.matmul(i, fx) + tf.matmul(o, fm) + fb)
+    update = tf.matmul(i, cx) + tf.matmul(o, cm) + cb
     state = forget_gate * state + input_gate * tf.tanh(update)
-    #output_gate = tf.sigmoid(tf.matmul(i, ox) + tf.matmul(o, om) + ob)
+    output_gate = tf.sigmoid(tf.matmul(i, ox) + tf.matmul(o, om) + ob)
     return output_gate * tf.tanh(state), state
 
   # Input data.
@@ -299,6 +290,4 @@ with tf.Session(graph=graph) as session:
         valid_logprob = valid_logprob + logprob(predictions, b[1])
       print('Validation set perplexity: %.2f' % float(np.exp(
         valid_logprob / valid_size)))
-
-
 
