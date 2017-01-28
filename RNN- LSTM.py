@@ -211,7 +211,7 @@ with graph.as_default():
     logits = tf.nn.xw_plus_b(tf.concat(0,outputs), w, b)
     
     loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
-        labels=tf.concat(0,train_labels), logits=logits))
+        logits=logits, labels=tf.concat(0,train_labels)))
 
   # Optimizer.
   global_step = tf.Variable(0)
