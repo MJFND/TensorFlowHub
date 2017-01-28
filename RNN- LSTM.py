@@ -241,7 +241,7 @@ with graph.as_default():
 
 
 
-num_steps = 1001
+num_steps = 10001
 summary_frequency = 100
 
 with tf.Session(graph=graph) as session:
