@@ -105,7 +105,7 @@ with graph.as_default():
 # Construct model
   logits = Neural_Network_Dropout(tf_train_dataset, weights, biases)
 
-  loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits, tf_train_labels)+ 0.01 * tf.nn.l2_loss(weights['h1']) + 0.01 * tf.nn.l2_loss(weights['h2'])  + 0.01 * tf.nn.l2_loss(weights['h3']) + 0.01 * tf.nn.l2_loss(weights['out']))
+  loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=tf_train_labels)+ 0.01 * tf.nn.l2_loss(weights['h1']) + 0.01 * tf.nn.l2_loss(weights['h2'])  + 0.01 * tf.nn.l2_loss(weights['h3']) + 0.01 * tf.nn.l2_loss(weights['out']))
     
   # Optimizer.
   optimizer = tf.train.GradientDescentOptimizer(0.5).minimize(loss)

@@ -83,7 +83,7 @@ with graph.as_default():
 # Construct model
   logits = Neural_Network(tf_train_dataset, weights, biases)
 
-  loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits, tf_train_labels) )
+  loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=tf_train_labels) )
 #+ 0.01 * tf.nn.l2_loss(weights['h1']) + 0.01 * tf.nn.l2_loss(weights['out']))
   
   # Optimizer.

@@ -74,18 +74,17 @@ with graph.as_default():
   layer4_weights = tf.Variable(tf.truncated_normal(
       [num_hidden, num_labels], stddev=0.1))
   layer4_biases = tf.Variable(tf.constant(1.0, shape=[num_labels]))
-  
-   
-def model_dropout(data):
+     
+  def model_dropout(data):
     keep_prob = tf.Variable(0.5,tf.float32)
     conv_1 = tf.nn.conv2d(data, layer1_weights, [1, 1, 1, 1], padding='SAME')
     hidden_1 = tf.nn.relu(conv_1 + layer1_biases)
     pool_1 = tf.nn.max_pool(hidden_1,[1, 2, 2, 1],[1, 2, 2, 1], padding='SAME')
-
+    
     conv_2 = tf.nn.conv2d(pool_1, layer2_weights, [1, 1, 1, 1], padding='SAME')
     hidden_2 = tf.nn.relu(conv_2 + layer2_biases)
     pool_2 = tf.nn.max_pool(hidden_2,[1, 2, 2, 1],[1, 2, 2, 1], padding='SAME')
-
+    
     shape = pool_2.get_shape().as_list()
     reshape = tf.reshape(pool_2, [shape[0], shape[1] * shape[2] * shape[3]])
     out_layer = tf.nn.relu(tf.matmul(reshape, layer3_weights) + layer3_biases)
@@ -97,11 +96,11 @@ def model_dropout(data):
     conv_1 = tf.nn.conv2d(data, layer1_weights, [1, 1, 1, 1], padding='SAME')
     hidden_1 = tf.nn.relu(conv_1 + layer1_biases)
     pool_1 = tf.nn.max_pool(hidden_1,[1, 2, 2, 1],[1, 2, 2, 1], padding='SAME')
-
+    
     conv_2 = tf.nn.conv2d(pool_1, layer2_weights, [1, 1, 1, 1], padding='SAME')
     hidden_2 = tf.nn.relu(conv_2 + layer2_biases)
     pool_2 = tf.nn.max_pool(hidden_2,[1, 2, 2, 1],[1, 2, 2, 1], padding='SAME')
-
+  
     shape = pool_2.get_shape().as_list()
     reshape = tf.reshape(pool_2, [shape[0], shape[1] * shape[2] * shape[3]])
     out_layer = tf.nn.relu(tf.matmul(reshape, layer3_weights) + layer3_biases)
@@ -109,16 +108,15 @@ def model_dropout(data):
   
   # Training computation.
   logits = model_dropout(tf_train_dataset)
-  loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits, tf_train_labels))
-	
+  loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=tf_train_labels))
+  
   # Optimizer.
   optimizer = tf.train.GradientDescentOptimizer(0.05).minimize(loss)
-    
+      
   # Predictions for the training, validation, and test data.
   train_prediction = tf.nn.softmax(logits)
   valid_prediction = tf.nn.softmax(model(tf_valid_dataset))
   test_prediction = tf.nn.softmax(model(tf_test_dataset))
-
   
 num_steps = 20001
 
