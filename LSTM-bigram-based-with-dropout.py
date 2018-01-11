@@ -208,7 +208,7 @@ with graph.as_default():
   output = saved_output
   state = saved_state
   for i in train_inputs:
-    bigram_index = tf.argmax(i[0], dimension=1) + vocabulary_size * tf.argmax(i[1], dimension=1)
+    bigram_index = tf.argmax(i[0], axis=1) + vocabulary_size * tf.argmax(i[1], axis=1)
     i_embed = tf.nn.embedding_lookup(vocabulary_embeddings, bigram_index)
     drop_i = tf.nn.dropout(i_embed, 0.7)
     output, state = lstm_cell(drop_i, output, state)
@@ -220,10 +220,10 @@ with graph.as_default():
                                 saved_state.assign(state)]):
     # Classifier.
     
-    logits = tf.nn.xw_plus_b(tf.concat(0,outputs), w, b)
+    logits = tf.nn.xw_plus_b(tf.concat(outputs, 0), w, b)
     
     loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
-        logits=logits,labels=tf.concat(0,train_labels)))
+        logits=logits,labels=tf.concat(train_labels, 0)))
 
   # Optimizer.
   global_step = tf.Variable(0)
@@ -243,7 +243,7 @@ with graph.as_default():
   sample_input = list()
   for _ in range(2):  
     sample_input.append(tf.placeholder(tf.float32, shape=[1, vocabulary_size]))
-  samp_in_index = tf.argmax(sample_input[0], dimension=1) + vocabulary_size * tf.argmax(sample_input[1], dimension=1)
+  samp_in_index = tf.argmax(sample_input[0], axis=1) + vocabulary_size * tf.argmax(sample_input[1], axis=1)
   sample_input_embedding = tf.nn.embedding_lookup(vocabulary_embeddings, samp_in_index)
   saved_sample_output = tf.Variable(tf.zeros([1, num_nodes]))
   saved_sample_state = tf.Variable(tf.zeros([1, num_nodes]))
