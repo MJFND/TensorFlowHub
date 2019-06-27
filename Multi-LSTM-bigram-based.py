@@ -191,10 +191,10 @@ with graph.as_default():
 
   # Definition of the cell computation.
   def lstm_cell(i, o, state):
-    m_input = tf.pack([i for _ in range(m_rows)])
-    m_saved_output = tf.pack([o for _ in range(m_rows)])
-    m_all = tf.batch_matmul(m_input, m_input_w) + tf.batch_matmul(m_saved_output, m_middle) + m_biases
-    m_all = tf.unpack(m_all)
+    m_input = tf.stack([i for _ in range(m_rows)])
+    m_saved_output = tf.stack([o for _ in range(m_rows)])
+    m_all = tf.matmul(m_input, m_input_w) + tf.matmul(m_saved_output, m_middle) + m_biases
+    m_all = tf.unstack(m_all)
     input_gate = tf.sigmoid(m_all[m_input_index])
     forget_gate = tf.sigmoid(m_all[m_forget_index])
     update = m_all[m_update_index]
@@ -206,12 +206,12 @@ with graph.as_default():
     """Create a LSTM cell. See e.g.: http://arxiv.org/pdf/1402.1128v1.pdf
     Note that in this formulation, we omit the various connections between the
     previous state and the gates."""    
-    m_input2 = tf.pack([i for _ in range(m_rows)])
-    m_saved_output2 = tf.pack([o for _ in range(m_rows)])
+    m_input2 = tf.stack([i for _ in range(m_rows)])
+    m_saved_output2 = tf.stack([o for _ in range(m_rows)])
     
    # m_input2 = tf.nn.dropout(m_input2, keep_prob)
-    m_all = tf.batch_matmul(m_input2, m_input_w2) + tf.batch_matmul(m_saved_output2, m_middle_w2) + m_biases
-    m_all = tf.unpack(m_all)
+    m_all = tf.matmul(m_input2, m_input_w2) + tf.matmul(m_saved_output2, m_middle_w2) + m_biases
+    m_all = tf.unstack(m_all)
     
     input_gate = tf.sigmoid(m_all[m_input_index])
     forget_gate = tf.sigmoid(m_all[m_forget_index])
@@ -236,7 +236,7 @@ with graph.as_default():
   output2 = saved_output2
   state2 = saved_state2
   for i in train_inputs:
-    bigram_index = tf.argmax(i[0], dimension=1) + vocabulary_size * tf.argmax(i[1], dimension=1)
+    bigram_index = tf.argmax(i[0], axis=1) + vocabulary_size * tf.argmax(i[1], axis=1)
     i_embed = tf.nn.embedding_lookup(vocabulary_embeddings, bigram_index)
     output1, state1 = lstm_cell(i_embed, output1, state1)
     output2, state2 = lstm_cell1(output1, output2, state2)
@@ -249,10 +249,10 @@ with graph.as_default():
                                 saved_state2.assign(state2)]):
     # Classifier.
     
-    logits = tf.nn.xw_plus_b(tf.concat(0,outputs), w, b)
+    logits = tf.nn.xw_plus_b(tf.concat(outputs,0), w, b)
     
     loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
-        logits=logits,labels=tf.concat(0,train_labels)))
+        logits=logits,labels=tf.concat(train_labels,0)))
 
   # Optimizer.
   global_step = tf.Variable(0)

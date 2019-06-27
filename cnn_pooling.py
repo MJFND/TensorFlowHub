@@ -81,11 +81,11 @@ with graph.as_default():
     conv_1 = tf.nn.conv2d(data, layer1_weights, [1, 1, 1, 1], padding='SAME')
     hidden_1 = tf.nn.relu(conv_1 + layer1_biases)
     pool_1 = tf.nn.max_pool(hidden_1,[1, 2, 2, 1],[1, 2, 2, 1], padding='SAME')
-
+    
     conv_2 = tf.nn.conv2d(pool_1, layer2_weights, [1, 1, 1, 1], padding='SAME')
     hidden_2 = tf.nn.relu(conv_2 + layer2_biases)
-	pool_2 = tf.nn.max_pool(hidden_2,[1, 2, 2, 1],[1, 2, 2, 1], padding='SAME')
-
+    pool_2 = tf.nn.max_pool(hidden_2,[1, 2, 2, 1],[1, 2, 2, 1], padding='SAME')
+    
     shape = pool_2.get_shape().as_list()
     reshape = tf.reshape(pool_2, [shape[0], shape[1] * shape[2] * shape[3]])
     out_layer = tf.nn.relu(tf.matmul(reshape, layer3_weights) + layer3_biases)
@@ -94,7 +94,7 @@ with graph.as_default():
   # Training computation.
   logits = model(tf_train_dataset)
   loss = tf.reduce_mean(
-    tf.nn.softmax_cross_entropy_with_logits(logits, tf_train_labels))
+    tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=tf_train_labels))
     
   # Optimizer.
   optimizer = tf.train.GradientDescentOptimizer(0.05).minimize(loss)
