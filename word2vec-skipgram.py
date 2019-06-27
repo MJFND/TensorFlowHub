@@ -143,8 +143,8 @@ with graph.as_default(), tf.device('/cpu:0'):
   embed = tf.nn.embedding_lookup(embeddings, train_dataset)
   # Compute the softmax loss, using a sample of the negative labels each time.
   loss = tf.reduce_mean(
-    tf.nn.sampled_softmax_loss(softmax_weights, softmax_biases, train_labels, embed,
-                               num_sampled, vocabulary_size))
+    tf.nn.sampled_softmax_loss(weights=softmax_weights, biases=softmax_biases, labels=train_labels, inputs=embed,
+                               num_sampled=num_sampled, num_classes=vocabulary_size, name='sampled_softmax_loss'))
 
   # Optimizer.
   # Note: The optimizer will optimize the softmax_weights AND the embeddings.

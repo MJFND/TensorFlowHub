@@ -77,13 +77,10 @@ with graph.as_default():
   layer4_biases = tf.Variable(tf.constant(1.0, shape=[num_labels]))
   
   # Model.  
-
   def model(data):
-  
     dyn_input_shape = data.get_shape().as_list()
     batch_size = dyn_input_shape[0]
-    output_shape = tf.pack([batch_size, 28, 28, 16])
-	
+    output_shape = tf.stack([batch_size, 28, 28, 16])
     print(batch_size)
     conv = tf.nn.conv2d(data, layer1_weights, [1, 2, 2, 1], padding='SAME')
     hidden = tf.nn.relu(conv + layer1_biases)  
@@ -93,11 +90,10 @@ with graph.as_default():
     reshape = tf.reshape(hidden, [shape[0], shape[1] * shape[2] * shape[3]])
     hidden = tf.nn.relu(tf.matmul(reshape, layer3_weights) + layer3_biases)
     return tf.matmul(hidden, layer4_weights) + layer4_biases
-			 
-  
+
   # Training computation.
   logits = model(tf_train_dataset)
-  loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits, tf_train_labels))
+  loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=tf_train_labels))
    
   # Optimizer.
   optimizer = tf.train.GradientDescentOptimizer(0.05).minimize(loss)
